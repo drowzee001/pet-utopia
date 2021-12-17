@@ -1,20 +1,36 @@
-<form>
-  <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Zip Code</label>
-    <input
-      type="email"
-      class="form-control"
-      id="exampleInputEmail1"
-      aria-describedby="emailHelp"
-    />
+<div class="d-flex flex-column justify-content-center align-items-center mt-5">
+  <h1 class="my-5">Find Your Next Forever Friend</h1>
+  <br />
+  <form (ngSubmit)="onSubmit()">
+    <div class="mb-5">
+      <label for="zipcode" class="form-label">Zip Code</label>
+      <input
+        type="number"
+        class="form-control"
+        id="zipcode"
+        aria-describedby="emailHelp"
+        [formControl]="zipcode"
+      />
+    </div>
+    <div class="mb-5">
+      <label for="typeSelect" class="form-label">Type of Pet</label>
+      <select
+        id="typeSelect"
+        class="form-select"
+        aria-label="Default select example"
+        [formControl]="type"
+      >
+        <option disabled selected value="">Select a Species</option>
+        <option *ngFor="let type of types" value="{{ type.name }}">
+          {{ type.name }}
+        </option>
+      </select>
+    </div>
+    <div class="text-center">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+  <div class="alert alert-danger mt-5" role="alert" *ngIf="error">
+    {{ error }}
   </div>
-  <div class="mb-3">
-    <select class="form-select" aria-label="Default select example">
-      <option selected>Open this select menu</option>
-      <option value="1">One</option>
-      <option value="2">Two</option>
-      <option value="3">Three</option>
-    </select>
-  </div>
-  <button type="submit" class="btn btn-primary">Search</button>
-</form>
+</div>

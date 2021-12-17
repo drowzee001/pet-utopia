@@ -1,0 +1,35 @@
+<div class="container-lg d-flex flex-wrap justify-content-center">
+  <div *ngFor="let animal of animals" class="card m-4" style="width: 18rem">
+    <h2 class="text-center my-4">{{ animal["name"] }}</h2>
+    <img
+      src="{{ animal['primary_photo_cropped']['full'] }}"
+      class="card-img-top"
+      alt="..."
+    />
+    <div class="card-body text-center">
+      <p>Age: {{ animal["age"] }}</p>
+      <p>Gender: {{ animal["gender"] }}</p>
+      <p>Breed: {{ animal["breeds"]["primary"] }}</p>
+      <p style="text-transform: capitalize">Status: {{ animal["status"] }}</p>
+      <p>Distance: {{ animal["distance"] | number: ".1-1" }} miles</p>
+      <p class="card-text">
+        {{ animal["description"] }}
+      </p>
+      <div class="d-flex justify-content-evenly">
+        <button
+          type="button"
+          class="btn btn-primary"
+          [routerLink]="['/pets', animal['id']]"
+        >
+          More Info</button
+        ><button
+          type="button"
+          class="btn btn-primary"
+          (click)="savePet($event.target, animal['id'])"
+        >
+          Save Pet
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

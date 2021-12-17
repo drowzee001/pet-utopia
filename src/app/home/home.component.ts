@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AnimalTypesService } from '../animal-types.service';
 
 @Component({
@@ -7,11 +9,35 @@ import { AnimalTypesService } from '../animal-types.service';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
-  constructor(public animalTypesService: AnimalTypesService) {}
+  public types: any[] = [];
+
+  zipcode = new FormControl('');
+  type = new FormControl('');
+  error = '';
+
+  constructor(
+    public animalTypesService: AnimalTypesService,
+    public router: Router
+  ) {}
 
   ngOnInit(): void {
+    // console.log(this.animalTypesService.getToken());
     this.animalTypesService
-      .getToken()
-      .subscribe((data) => console.log(data));
+      .getAnimalTypes()
+      .then((types) => (this.types = types));
+
+    // this.animalTypesService
+    //   .getAnimalTypes()
+    //   .subscribe((data) => console.log(data));
+  }
+
+  onSubmit(): void {
+    if (this.zipcode.value === '' || this.type.value === '') {
+      this.error = 'Please enter all inputs';
+    } else {
+      this.router.navigate(['/search'], {
+        queryParams: { zipcode: this.zipcode.value, type: this.type.value },
+      });
+    }
   }
 }
