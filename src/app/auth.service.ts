@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',

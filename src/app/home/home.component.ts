@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AnimalTypesService } from '../animal-types.service';
+import { AnimalsService } from '../animals.service';
 
 @Component({
   selector: 'app-home',
@@ -15,20 +15,12 @@ export class HomeComponent implements OnInit {
   type = new FormControl('');
   error = '';
 
-  constructor(
-    public animalTypesService: AnimalTypesService,
-    public router: Router
-  ) {}
+  constructor(public animalsService: AnimalsService, public router: Router) {}
 
   ngOnInit(): void {
-    // console.log(this.animalTypesService.getToken());
-    this.animalTypesService
+    this.animalsService
       .getAnimalTypes()
-      .then((types) => (this.types = types));
-
-    // this.animalTypesService
-    //   .getAnimalTypes()
-    //   .subscribe((data) => console.log(data));
+      .then((types: any) => (this.types = types));
   }
 
   onSubmit(): void {

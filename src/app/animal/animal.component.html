@@ -1,4 +1,4 @@
-<div class="container text-center">
+<div class="container text-center" *ngIf="!loading">
   <h1 class="my-5">{{ animal.name }}</h1>
   <h2 class="my-5">Status: {{ animal.status }}</h2>
   <img
@@ -50,6 +50,12 @@
   <div
     *ngFor="let video of animal.videos"
     [innerHTML]="safeHTML(video.embed)"
-  ></div> 
-  <a class="btn btn-primary mb-5" href="{{ animal.url }}" role="button">Adopt Me!</a>
+  ></div>
+  <a class="btn btn-primary mb-5" href="{{ animal.url }}" role="button"
+    >Adopt Me!</a
+  >
+</div>
+
+<div class="d-flex justify-content-center mt-5" *ngIf="loading">
+  <div class="spinner-border" role="status"></div>
 </div>

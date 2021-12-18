@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { AnimalTypesService } from '../animal-types.service';
+import { AnimalsService } from '../animals.service';
 
 @Component({
   selector: 'app-animal',
@@ -11,18 +11,20 @@ import { AnimalTypesService } from '../animal-types.service';
 export class AnimalComponent implements OnInit {
   id: string;
   animal: any;
+  loading: boolean = true;
+
   constructor(
     private route: ActivatedRoute,
-    private animalTypesService: AnimalTypesService,
+    private animalsService: AnimalsService,
     private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe((params) => {
       this.id = params['id'];
-      this.animalTypesService.getAnimal(this.id).then((animal) => {
+      this.animalsService.getAnimal(this.id).then((animal) => {
         this.animal = animal;
-        console.log(animal);
+        this.loading = false;
       });
     });
   }

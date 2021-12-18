@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AnimalTypesService } from '../animal-types.service';
+import { AnimalsService } from '../animals.service';
+import { AuthService } from '../auth.service';
 import { SavedPetsService } from '../saved-pets.service';
 
 @Component({
@@ -13,10 +14,12 @@ export class SearchComponent implements OnInit {
   type: string;
   animals: [];
   pagination: [];
+  loading: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
-    private animalTypesService: AnimalTypesService,
+    public authService: AuthService,
+    private animalTypesService: AnimalsService,
     private savedPetsService: SavedPetsService
   ) {}
 
@@ -28,11 +31,14 @@ export class SearchComponent implements OnInit {
     this.animalTypesService.getAnimals(this.zipcode, this.type).then((data) => {
       this.animals = data.animals;
       this.pagination = data.pagination;
+      this.loading = false;
     });
   }
 
   savePet(element: any, id: string) {
-    this.savedPetsService.savePet(id);
-    element.textContent = "Saved!"
+    if (this.authService.loggedIn) {
+      this.savedPetsService.savePet(id);
+      element.textContent = 'Saved!';
+    }
   }
 }

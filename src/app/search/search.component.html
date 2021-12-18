@@ -1,4 +1,32 @@
-<div class="container-lg d-flex flex-wrap justify-content-center">
+<div id="loginModal" class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Please Login</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          [routerLink]="'login'"
+        >
+          Go to Login
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="container-lg d-flex flex-wrap justify-content-center"
+  *ngIf="!loading"
+>
   <div *ngFor="let animal of animals" class="card m-4" style="width: 18rem">
     <h2 class="text-center my-4">{{ animal["name"] }}</h2>
     <img
@@ -26,10 +54,24 @@
           type="button"
           class="btn btn-primary"
           (click)="savePet($event.target, animal['id'])"
+          *ngIf="authService.loggedIn"
+        >
+          Save Pet</button
+        ><button
+          type="button"
+          class="btn btn-primary"
+          (click)="savePet($event.target, animal['id'])"
+          *ngIf="!authService.loggedIn"
+          data-bs-toggle="modal"
+          data-bs-target="#loginModal"
         >
           Save Pet
         </button>
       </div>
     </div>
+  </div>
+</div>
+<div class="d-flex justify-content-center mt-5" *ngIf="loading">
+  <div class="spinner-border" role="status">
   </div>
 </div>
