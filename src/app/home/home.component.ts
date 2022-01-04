@@ -14,13 +14,15 @@ export class HomeComponent implements OnInit {
   zipcode = new FormControl('');
   type = new FormControl('');
   error = '';
+  loading: boolean = true;
 
   constructor(public animalsService: AnimalsService, public router: Router) {}
 
   ngOnInit(): void {
-    this.animalsService
-      .getAnimalTypes()
-      .then((types: any) => (this.types = types));
+    this.animalsService.getAnimalTypes().then((types: any) => {
+      this.types = types;
+      this.loading = false;
+    });
   }
 
   onSubmit(): void {
