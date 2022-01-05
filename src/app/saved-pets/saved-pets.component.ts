@@ -25,7 +25,6 @@ export class SavedPetsComponent implements OnInit {
       this.route.navigate(['login']);
     } else {
       this.savedPetsService.savedPets.subscribe((res) => {
-        this.loading = false;
         this.savedPets = [];
         if (res.length > 0) {
           res.map(async (savedPet) => {
@@ -38,6 +37,7 @@ export class SavedPetsComponent implements OnInit {
                 });
               });
           });
+          this.loading = false;
         }
       });
     }

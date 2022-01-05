@@ -1,5 +1,6 @@
 <div
   class="container-lg d-flex flex-wrap justify-content-center"
+  *ngIf="!loading"
 >
   <h1 *ngIf="savedPets.length == 0" class="mt-5">No Saved Pets</h1>
   <div *ngFor="let pet of savedPets" class="card m-4" style="width: 18rem">
@@ -13,7 +14,9 @@
       <p>Age: {{ pet.animal["age"] }}</p>
       <p>Gender: {{ pet.animal["gender"] }}</p>
       <p>Breed: {{ pet.animal["breeds"]["primary"] }}</p>
-      <p style="text-transform: capitalize">Status: {{ pet.animal["status"] }}</p>
+      <p style="text-transform: capitalize">
+        Status: {{ pet.animal["status"] }}
+      </p>
       <p class="card-text">
         {{ pet.animal["description"] }}
       </p>
@@ -35,4 +38,8 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="d-flex justify-content-center mt-5" *ngIf="loading">
+  <div class="spinner-border" role="status"></div>
 </div>
