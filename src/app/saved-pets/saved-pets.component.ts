@@ -26,18 +26,22 @@ export class SavedPetsComponent implements OnInit {
     } else {
       this.savedPetsService.savedPets.subscribe((res) => {
         this.savedPets = [];
-        if (res.length > 0) {
-          res.map(async (savedPet) => {
-            this.animalsService
-              .getAnimal(savedPet.animal_id)
-              .then((animal: any) => {
-                this.savedPets.push({
-                  animal: animal,
-                  doc_id: savedPet.doc_id,
-                });
+
+        const requests = res.map((savedPet) => {
+          this.animalsService
+            .getAnimal(savedPet.animal_id)
+            .then((animal: any) => {
+              this.savedPets.push({
+                animal: animal,
+                doc_id: savedPet.doc_id,
               });
+            });
+        });
+
+        if (res.length > 0) {
+          Promise.all(requests).then(() => {
+            this.loading = false;
           });
-          this.loading = false;
         }
       });
     }
