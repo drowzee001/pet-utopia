@@ -42,7 +42,7 @@ export class SavedPetsComponent implements OnInit {
           Promise.all(requests).then(() => {
             this.loading = false;
           });
-        }
+        } else this.loading = false;
       });
     }
   }
