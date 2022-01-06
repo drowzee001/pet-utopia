@@ -28,7 +28,7 @@ export class SavedPetsComponent implements OnInit {
         this.savedPets = [];
 
         const requests = res.map((savedPet) => {
-          this.animalsService
+          return this.animalsService
             .getAnimal(savedPet.animal_id)
             .then((animal: any) => {
               this.savedPets.push({
