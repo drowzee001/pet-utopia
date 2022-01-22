@@ -1,4 +1,7 @@
-img {
-    height: 300px;
-    object-fit: cover;
+.pet-img {
+  height: 300px;
+  object-fit: cover;
+}
+.select-icon {
+  height: 25px;
 }

@@ -30,6 +30,7 @@ export class SearchComponent implements OnInit {
     });
     this.animalTypesService.getAnimals(this.zipcode, this.type).then((data) => {
       this.animals = data.animals;
+      console.log(data.pagination);
       this.pagination = data.pagination;
       this.loading = false;
     });

@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit {
   constructor(public animalsService: AnimalsService, public router: Router) {}
 
   ngOnInit(): void {
-    this.animalsService.getAnimalTypes().then((types: any) => {
+    this.animalsService.getAnimalTypes().then((types) => {
       this.types = types;
       this.loading = false;
     });

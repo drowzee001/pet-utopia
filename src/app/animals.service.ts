@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
 import axios, { AxiosInstance } from 'axios';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
+import { catchError, lastValueFrom, retry, throwError } from 'rxjs';
+import { errorPrefix } from '@firebase/util';
 
 @Injectable({
   providedIn: 'root',
@@ -8,43 +15,69 @@ import axios, { AxiosInstance } from 'axios';
 export class AnimalsService {
   public http: AxiosInstance;
   private token: string;
+  private headers: HttpHeaders;
   public types: [];
 
-  constructor() {
-    this.http = axios.create({
-      baseURL: 'https://api.petfinder.com/v2',
-    });
+  constructor(private http2: HttpClient) {
+    this.getToken();
+  }
+
+  handleError(error: HttpErrorResponse) {
+    if (localStorage.getItem('petFinderToken')) {
+      localStorage.removeItem('petFinderToken');
+      this.getToken();
+    }
+    // Return an observable with a user-facing error message.
+    return throwError(() => new Error('Something went wrong. Trying again'));
   }
 
   async getAnimalTypes() {
-    this.getToken();
     try {
-      const res = await this.http.get('/types');
-      this.types = res.data.types;
-      return this.types;
+      const res: any = await lastValueFrom(
+        this.http2.get('https://api.petfinder.com/v2/types', {
+          headers: this.headers,
+        })
+      );
+      return res.types;
     } catch (e) {
-      localStorage.removeItem('petFinderToken');
-      this.getToken();
-      const res = await this.http.get('/types');
-      this.types = res.data.types;
-      return this.types;
+      if (localStorage.getItem('petFinderToken')) {
+        localStorage.removeItem('petFinderToken');
+        await this.getToken();
+        const res: any = await lastValueFrom(
+          this.http2.get('https://api.petfinder.com/v2/types', {
+            headers: this.headers,
+          })
+        );
+        return res.types;
+      }
     }
   }
 
   async getAnimals(zipcode: string, type: string) {
-    this.getToken();
     try {
-      const res = await this.http.get(
-        `/animals/?type=${type}&location=${zipcode}&sort=distance`
+      const res: any = await lastValueFrom(
+        this.http2.get(
+          `https://api.petfinder.com/v2/animals/?type=${type}&location=${zipcode}&sort=distance`,
+          {
+            headers: this.headers,
+          }
+        )
       );
-      return res.data;
+      return res;
     } catch (e) {
-      localStorage.removeItem('petFinderToken');
-      await this.getToken();
-      const res = await this.http.get(
-        `/animals/?type=${type}&location=${zipcode}&sort=distance`
-      );
-      return res.data;
+      if (localStorage.getItem('petFinderToken')) {
+        localStorage.removeItem('petFinderToken');
+        await this.getToken();
+        const res: any = await lastValueFrom(
+          this.http2.get(
+            `https://api.petfinder.com/v2/animals/?type=${type}&location=${zipcode}&sort=distance`,
+            {
+              headers: this.headers,
+            }
+          )
+        );
+        return res;
+      }
     }
   }
 
@@ -55,24 +88,33 @@ export class AnimalsService {
       return res.data.animal;
     } catch (e) {
       localStorage.removeItem('petFinderToken');
-      await this.getToken();  
-      const res = await this.http.get(`/animals/${id}`); 
+      await this.getToken();
+      const res = await this.http.get(`/animals/${id}`);
       return res.data.animal;
     }
   }
-
   async getToken() {
-    if (!localStorage.getItem('petFinderToken')) {
-      const res = await this.http.post('/oauth2/token', {
-        client_id: environment.apiKey,
-        client_secret: environment.apiSecret,
-        grant_type: 'client_credentials',
-      });
-      this.token = res.data.access_token;
-      localStorage.setItem('petFinderToken', this.token);
+    const savedToken = localStorage.getItem('petFinderToken') || '';
+    if (savedToken && savedToken !== 'undefined' && savedToken !== '') {
+      this.token = savedToken;
+      this.headers = new HttpHeaders().set(
+        'Authorization',
+        `Bearer ${this.token}`
+      );
     } else {
-      this.token = localStorage.getItem('petFinderToken') || '';
+      const res = await lastValueFrom(
+        this.http2.post<any>('https://api.petfinder.com/v2/oauth2/token', {
+          client_id: environment.apiKey,
+          client_secret: environment.apiSecret,
+          grant_type: 'client_credentials',
+        })
+      );
+      this.token = res.access_token;
+      localStorage.setItem('petFinderToken', this.token);
+      this.headers = new HttpHeaders().set(
+        'Authorization',
+        `Bearer ${this.token}`
+      );
     }
-    this.http.defaults.headers.common['Authorization'] = `Bearer ${this.token}`;
   }
 }

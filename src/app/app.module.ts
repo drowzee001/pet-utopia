@@ -9,7 +9,8 @@ import { AnimalComponent } from './animal/animal.component';
 import { LoginComponent } from './login/login.component';
 import { SavedPetsComponent } from './saved-pets/saved-pets.component';
 import { AngularFireModule } from '@angular/fire/compat';
-import { environment } from '../environments/environment'; 
+import { environment } from '../environments/environment';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { environment } from '../environments/environment';
     FormsModule,
     ReactiveFormsModule,
     AngularFireModule.initializeApp(environment.firebase),
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
