@@ -19,6 +19,7 @@ export class AuthService {
       this.loggedIn = true;
       const userString = localStorage.getItem('sessionUser') || '{}';
       this.user = JSON.parse(userString);
+      console.log(this.user);
     }
   }
 

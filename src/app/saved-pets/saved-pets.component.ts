@@ -25,16 +25,21 @@ export class SavedPetsComponent implements OnInit {
       this.route.navigate(['login']);
     } else {
       this.savedPetsService.savedPets.subscribe((res) => {
+        this.loading = true;
         this.savedPets = [];
-
+        console.log(res);
         const requests = res.map((savedPet) => {
           return this.animalsService
             .getAnimal(savedPet.animal_id)
             .then((animal: any) => {
-              this.savedPets.push({
-                animal: animal,
-                doc_id: savedPet.doc_id,
-              });
+              if (animal === null) {
+                this.deletePet(savedPet.doc_id);
+              } else {
+                this.savedPets.push({
+                  animal: animal,
+                  doc_id: savedPet.doc_id,
+                });
+              }
             });
         });
 

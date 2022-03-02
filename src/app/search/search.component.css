@@ -5,3 +5,26 @@
 .select-icon {
   height: 25px;
 }
+.enabled {
+  cursor: pointer;
+}
+.pagination {
+  padding-top: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.bottom {
+  padding-bottom: 30px;
+}
+.pagination a {
+  text-decoration: none;
+  color: black;
+  padding: 5px;
+}
+.current_page {
+  text-decoration: underline;
+}
+.pagination a:hover {
+  color: darkgray;
+}

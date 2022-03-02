@@ -9,7 +9,7 @@ import { SearchComponent } from './search/search.component';
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'search', component: SearchComponent },
+  { path: 'search', component: SearchComponent }, 
   { path: 'pets/:id', component: AnimalComponent },
   {
     path: 'savedPets',

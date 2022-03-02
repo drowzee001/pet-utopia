@@ -7,8 +7,6 @@ import {
   HttpHeaders,
 } from '@angular/common/http';
 import { catchError, lastValueFrom, retry, throwError } from 'rxjs';
-import { errorPrefix } from '@firebase/util';
-
 @Injectable({
   providedIn: 'root',
 })
@@ -18,9 +16,7 @@ export class AnimalsService {
   private headers: HttpHeaders;
   public types: [];
 
-  constructor(private http2: HttpClient) {
-    this.getToken();
-  }
+  constructor(private http2: HttpClient) {}
 
   handleError(error: HttpErrorResponse) {
     if (localStorage.getItem('petFinderToken')) {
@@ -32,6 +28,7 @@ export class AnimalsService {
   }
 
   async getAnimalTypes() {
+    await this.getToken();
     try {
       const res: any = await lastValueFrom(
         this.http2.get('https://api.petfinder.com/v2/types', {
@@ -53,16 +50,18 @@ export class AnimalsService {
     }
   }
 
-  async getAnimals(zipcode: string, type: string) {
+  async getAnimals(zipcode: string, type: string, page: string) {
+    await this.getToken();
     try {
       const res: any = await lastValueFrom(
         this.http2.get(
-          `https://api.petfinder.com/v2/animals/?type=${type}&location=${zipcode}&sort=distance`,
+          `https://api.petfinder.com/v2/animals/?type=${type}&location=${zipcode}&sort=distance&page=${page}`,
           {
             headers: this.headers,
           }
         )
       );
+      console.log(res);
       return res;
     } catch (e) {
       if (localStorage.getItem('petFinderToken')) {
@@ -70,27 +69,41 @@ export class AnimalsService {
         await this.getToken();
         const res: any = await lastValueFrom(
           this.http2.get(
-            `https://api.petfinder.com/v2/animals/?type=${type}&location=${zipcode}&sort=distance`,
+            `https://api.petfinder.com/v2/animals/?type=${type}&location=${zipcode}&sort=distance&page=${page}`,
             {
               headers: this.headers,
             }
           )
         );
+        console.log(res);
         return res;
       }
     }
   }
 
   async getAnimal(id: string) {
-    this.getToken();
+    await this.getToken();
     try {
-      const res = await this.http.get(`/animals/${id}`);
-      return res.data.animal;
+      const res: any = await lastValueFrom(
+        this.http2.get(`https://api.petfinder.com/v2/animals/${id}`, {
+          headers: this.headers,
+        })
+      );
+      return res.animal;
     } catch (e) {
+      const error = (e as HttpErrorResponse).error.title;
+      console.log(error);
+      if (error === 'Not Found') {
+        return null;
+      }
       localStorage.removeItem('petFinderToken');
       await this.getToken();
-      const res = await this.http.get(`/animals/${id}`);
-      return res.data.animal;
+      const res: any = await lastValueFrom(
+        this.http2.get(`https://api.petfinder.com/v2/animals/${id}`, {
+          headers: this.headers,
+        })
+      );
+      return res.animal;
     }
   }
   async getToken() {
