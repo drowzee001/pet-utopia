@@ -60,8 +60,7 @@ export class AnimalsService {
             headers: this.headers,
           }
         )
-      );
-      console.log(res);
+      ); 
       return res;
     } catch (e) {
       if (localStorage.getItem('petFinderToken')) {
@@ -74,8 +73,7 @@ export class AnimalsService {
               headers: this.headers,
             }
           )
-        );
-        console.log(res);
+        ); 
         return res;
       }
     }
