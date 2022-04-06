@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Location } from '@angular/common';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
+import { SavedPetsService } from './saved-pets.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ export class AuthService {
   user: any = {};
 
   constructor(
-    public auth: AngularFireAuth,
+    public auth: AngularFireAuth, 
     private route: Router,
     private location: Location
   ) {
@@ -88,7 +89,7 @@ export class AuthService {
     }
   }
   logout() {
-    this.auth.signOut().then(() => {
+    this.auth.signOut().then(() => { 
       localStorage.removeItem('sessionUser');
       this.loggedIn = false;
       this.route.navigate(['']);

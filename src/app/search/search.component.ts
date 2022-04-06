@@ -42,7 +42,8 @@ export class SearchComponent implements OnInit {
       this.animalTypesService
         .getAnimals(this.zipcode, this.type, this.page)
         .then((data) => {
-          this.savedPetsService.savedPets.subscribe((savedPets) => {
+          if(authService.loggedIn === true) {
+            this.savedPetsService.savedPets.subscribe((savedPets) => {
             data.animals.forEach((animal: { [x: string]: string }) => {
               let saved = false;
               savedPets.forEach((savedPet) => {
@@ -53,6 +54,14 @@ export class SearchComponent implements OnInit {
               this.animals.push({ animal_data: animal, saved });
             });
           });
+          }
+          else {
+            let saved = false;
+            data.animals.forEach((animal: { [x: string]: string }) => {
+              this.animals.push({ animal_data: animal, saved });
+            });
+          }
+          
           this.current_page = data.pagination.current_page;
           if (data.pagination.current_page > 5) {
             for (
