@@ -19,7 +19,7 @@ export class AuthService {
     if (localStorage.getItem('sessionUser')) {
       this.loggedIn = true;
       const userString = localStorage.getItem('sessionUser') || '{}';
-      this.user = JSON.parse(userString); 
+      this.user = JSON.parse(userString);
     }
   }
 
@@ -42,6 +42,10 @@ export class AuthService {
               id: res.user._delegate.uid,
             })
           );
+          this.user = {
+            email: res.user._delegate.email,
+            id: res.user._delegate.uid,
+          };
           this.location.back();
         })
         .catch((e) => {
@@ -76,6 +80,10 @@ export class AuthService {
               id: res.user._delegate.uid,
             })
           );
+          this.user = {
+            email: res.user._delegate.email,
+            id: res.user._delegate.uid,
+          };
           this.location.back();
         })
         .catch((e) => {
@@ -89,7 +97,7 @@ export class AuthService {
     }
   }
   logout() {
-    this.auth.signOut().then(() => { 
+    this.auth.signOut().then(() => {
       localStorage.removeItem('sessionUser');
       this.loggedIn = false;
       this.route.navigate(['']);

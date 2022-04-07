@@ -99,7 +99,7 @@
           ><button
             type="button"
             class="btn btn-primary"
-            (click)="savePet($event.target, animal.animal_data['id'])"
+            (click)="deletePet($event.target, animal.doc_id)"
             *ngIf="authService.loggedIn && animal.saved"
           >
             Remove Pet</button

@@ -24,10 +24,10 @@ export class SavedPetsComponent implements OnInit {
     if (!this.authService.loggedIn) {
       this.route.navigate(['login']);
     } else {
-      this.savedPetsService.savedPets.subscribe((res) => {
+      this.savedPetsService.updateCollection();
+      this.savedPetsService.savedPets$.subscribe((res) => {
         this.loading = true;
         this.savedPets = [];
-        console.log(res);
         const requests = res.map((savedPet) => {
           return this.animalsService
             .getAnimal(savedPet.animal_id)

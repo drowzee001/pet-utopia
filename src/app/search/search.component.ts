@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AnimalsService } from '../animals.service';
 import { AuthService } from '../auth.service';
-import { SavedPetsService } from '../saved-pets.service'; 
+import { SavedPetsService } from '../saved-pets.service';
 
 interface pet {
   animal_data: any;
   saved: boolean;
+  doc_id?: string;
 }
 
 @Component({
@@ -42,26 +43,27 @@ export class SearchComponent implements OnInit {
       this.animalTypesService
         .getAnimals(this.zipcode, this.type, this.page)
         .then((data) => {
-          if(authService.loggedIn === true) {
-            this.savedPetsService.savedPets.subscribe((savedPets) => {
-            data.animals.forEach((animal: { [x: string]: string }) => {
-              let saved = false;
-              savedPets.forEach((savedPet) => {
-                if (savedPet.animal_id === animal['id']) {
-                  saved = true;
-                }
+          if (authService.loggedIn === true) {
+            this.savedPetsService.savedPets$.subscribe((savedPets) => {
+              data.animals.forEach((animal: { [x: string]: string }) => {
+                let saved = false;
+                let doc_id = '';
+                savedPets.forEach((savedPet) => {
+                  if (savedPet.animal_id === animal['id']) { 
+                    saved = true;
+                    doc_id = savedPet.doc_id;
+                  }
+                });
+                this.animals.push({ animal_data: animal, saved, doc_id });
               });
-              this.animals.push({ animal_data: animal, saved });
             });
-          });
-          }
-          else {
+          } else {
             let saved = false;
             data.animals.forEach((animal: { [x: string]: string }) => {
               this.animals.push({ animal_data: animal, saved });
             });
           }
-          
+
           this.current_page = data.pagination.current_page;
           if (data.pagination.current_page > 5) {
             for (
@@ -89,14 +91,18 @@ export class SearchComponent implements OnInit {
       element.textContent = 'Saved!';
     }
   }
+  deletePet(element: any, id: any) { 
+    this.savedPetsService.deletePet(id);
+    element.textContent = 'Save Pet';
+  }
 }
 
-import {  Pipe, PipeTransform } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser'
+import { Pipe, PipeTransform } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Pipe({ name: 'safeHtml' })
 export class SafeHtmlPipe implements PipeTransform {
-  constructor(private sanitized: DomSanitizer) { }
+  constructor(private sanitized: DomSanitizer) {}
   transform(value: string) {
     return this.sanitized.bypassSecurityTrustHtml(value);
   }

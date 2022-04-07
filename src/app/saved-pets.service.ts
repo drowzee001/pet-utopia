@@ -3,9 +3,9 @@ import {
   AngularFirestore,
   AngularFirestoreCollection,
 } from '@angular/fire/compat/firestore';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 
 export interface savedPet {
   doc_id: string;
@@ -18,53 +18,44 @@ export interface savedPet {
 })
 export class SavedPetsService {
   private savedPetsCollection: AngularFirestoreCollection<any>;
-  savedPets: Observable<savedPet[]>;
+  savedPets$: Observable<savedPet[]>;
+  uid$: BehaviorSubject<string | null>;
+
   constructor(private afs: AngularFirestore, private auth: AuthService) {
     if (auth.user.id) {
-      this.savedPetsCollection = afs.collection<savedPet>('savedPets', (ref) =>
-        ref.where('uid', '==', auth.user.id)
-      );
-      this.savedPets = this.savedPetsCollection.snapshotChanges().pipe(
-        map((actions) =>
-          actions.map((data) => {
-            const doc = data.payload.doc.data();
-            const doc_id = data.payload.doc.id;
-            return { doc_id, ...doc };
-          })
+      this.uid$ = new BehaviorSubject(this.auth.user.id);
+      this.savedPets$ = combineLatest([this.uid$]).pipe(
+        switchMap(([uid]) =>
+          afs
+            .collection<savedPet>('savedPets', (ref) =>
+              ref.where('uid', '==', uid)
+            )
+            .snapshotChanges()
+            .pipe(
+              map((actions) =>
+                actions.map((data) => {
+                  const doc = data.payload.doc.data(); 
+                  return {
+                    doc_id: data.payload.doc.id,
+                    uid: doc.uid,
+                    animal_id: doc.animal_id,
+                  };
+                })
+              )
+            )
         )
       );
     }
-    // this.savedPetsCollection = this.afs.collection<savedPet>('savedPets');
   }
-  getSavedPets() {
-    // if (this.auth.user.id) {
-    //   this.savedPetsCollection = this.afs.collection<savedPet>(
-    //     'savedPets',
-    //     (ref) => ref.where('uid', '==', this.auth.user.id)
-    //   );
-    //   this.savedPets = this.savedPetsCollection.valueChanges({
-    //     idField: 'doc_id',
-    //   });
-    // }
-  }
-  checkIfSaved(id: string) {
-    // if (this.auth.user.id) {
-    //   const savedPet = this.afs.collection<savedPet>('savedPets', (ref) =>
-    //     ref.where('uid', '==', this.auth.user.id).where('animal_id', '==', id)
-    //   );
-    //   console.log(savedPet);
-    //   if (savedPet) {
-    //     return true;
-    //   } else return false;
-    // } else {
-    //   return false;
-    // }
+  updateCollection() {
+    this.uid$.next(this.auth.user.id);
   }
   savePet(id: string) {
     this.savedPetsCollection = this.afs.collection<savedPet>('savedPets');
     this.savedPetsCollection.add({ uid: this.auth.user.id, animal_id: id });
   }
   deletePet(id: string) {
+    console.log();
     this.afs.doc(`savedPets/${id}`).delete();
   }
 }
