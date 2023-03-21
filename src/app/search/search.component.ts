@@ -44,12 +44,12 @@ export class SearchComponent implements OnInit {
         .getAnimals(this.zipcode, this.type, this.page)
         .then((data) => {
           if (authService.loggedIn === true) {
-            this.savedPetsService.savedPets$.subscribe((savedPets) => {
+            this.savedPetsService.getSavedPets().subscribe((savedPets) => {
               data.animals.forEach((animal: { [x: string]: string }) => {
                 let saved = false;
                 let doc_id = '';
                 savedPets.forEach((savedPet) => {
-                  if (savedPet.animal_id === animal['id']) { 
+                  if (savedPet.animal_id === animal['id']) {
                     saved = true;
                     doc_id = savedPet.doc_id;
                   }
@@ -91,7 +91,7 @@ export class SearchComponent implements OnInit {
       element.textContent = 'Saved!';
     }
   }
-  deletePet(element: any, id: any) { 
+  deletePet(element: any, id: any) {
     this.savedPetsService.deletePet(id);
     element.textContent = 'Save Pet';
   }
