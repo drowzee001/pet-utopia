@@ -17,16 +17,51 @@ export interface savedPet {
 })
 export class SavedPetsService {
   private savedPetsCollection: AngularFirestoreCollection<any>;
+<<<<<<< Updated upstream
   savedPets: Observable<savedPet[]>;
   constructor(private afs: AngularFirestore, private auth: AuthService) {
     if (auth.user.id) {
       this.savedPetsCollection = afs.collection<savedPet>('savedPets', (ref) =>
         ref.where('uid', '==', auth.user.id)
+=======
+  savedPets$: Observable<savedPet[]>;
+  savedPets: savedPet[] = [];
+  uid$: BehaviorSubject<string | null>;
+
+  constructor(private afs: AngularFirestore, private auth: AuthService) {}
+  getSavedPets() {
+    if (this.auth.user.id) {
+      this.uid$ = new BehaviorSubject(this.auth.user.id);
+      this.savedPets$ = combineLatest([this.uid$]).pipe(
+        switchMap(([uid]) =>
+          this.afs
+            .collection<savedPet>('savedPets', (ref) =>
+              ref.where('uid', '==', uid)
+            )
+            .snapshotChanges()
+            .pipe(
+              map((actions) =>
+                actions.map((data) => {
+                  const doc = data.payload.doc.data();
+                  return {
+                    doc_id: data.payload.doc.id,
+                    uid: doc.uid,
+                    animal_id: doc.animal_id,
+                  };
+                })
+              )
+            )
+        )
+>>>>>>> Stashed changes
       );
       this.savedPets = this.savedPetsCollection.valueChanges({
         idField: 'doc_id',
       });
     }
+<<<<<<< Updated upstream
+=======
+    return this.savedPets$;
+>>>>>>> Stashed changes
   }
   savePet(id: string) {
     this.savedPetsCollection.add({ uid: this.auth.user.id, animal_id: id });

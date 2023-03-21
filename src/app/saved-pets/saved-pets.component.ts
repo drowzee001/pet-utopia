@@ -24,7 +24,12 @@ export class SavedPetsComponent implements OnInit {
     if (!this.authService.loggedIn) {
       this.route.navigate(['login']);
     } else {
+<<<<<<< Updated upstream
       this.savedPetsService.savedPets.subscribe((res) => {
+=======
+      this.savedPetsService.getSavedPets().subscribe((res) => {
+        this.loading = true;
+>>>>>>> Stashed changes
         this.savedPets = [];
 
         const requests = res.map((savedPet) => {
@@ -47,6 +52,8 @@ export class SavedPetsComponent implements OnInit {
     }
   }
   deletePet(id: string) {
+    console.log(id);
     this.savedPetsService.deletePet(id);
+    this.savedPets = this.savedPets.filter((pet) => pet.doc_id !== id);
   }
 }
