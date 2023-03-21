@@ -21,12 +21,13 @@ export class SavedPetsService {
   savedPets$: Observable<savedPet[]>;
   uid$: BehaviorSubject<string | null>;
 
-  constructor(private afs: AngularFirestore, private auth: AuthService) {
-    if (auth.user.id) {
+  constructor(private afs: AngularFirestore, private auth: AuthService) {}
+  getSavedPets() {
+    if (this.auth.user.id) {
       this.uid$ = new BehaviorSubject(this.auth.user.id);
       this.savedPets$ = combineLatest([this.uid$]).pipe(
         switchMap(([uid]) =>
-          afs
+          this.afs
             .collection<savedPet>('savedPets', (ref) =>
               ref.where('uid', '==', uid)
             )
@@ -34,7 +35,7 @@ export class SavedPetsService {
             .pipe(
               map((actions) =>
                 actions.map((data) => {
-                  const doc = data.payload.doc.data(); 
+                  const doc = data.payload.doc.data();
                   return {
                     doc_id: data.payload.doc.id,
                     uid: doc.uid,
@@ -46,9 +47,7 @@ export class SavedPetsService {
         )
       );
     }
-  }
-  updateCollection() {
-    this.uid$.next(this.auth.user.id);
+    return this.savedPets$;
   }
   savePet(id: string) {
     this.savedPetsCollection = this.afs.collection<savedPet>('savedPets');

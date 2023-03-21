@@ -23,9 +23,8 @@ export class SavedPetsComponent implements OnInit {
   ngOnInit(): void {
     if (!this.authService.loggedIn) {
       this.route.navigate(['login']);
-    } else {
-      this.savedPetsService.updateCollection();
-      this.savedPetsService.savedPets$.subscribe((res) => {
+    } else { 
+      this.savedPetsService.getSavedPets().subscribe((res) => {
         this.loading = true;
         this.savedPets = [];
         const requests = res.map((savedPet) => {
